@@ -25,14 +25,14 @@ class DetermineColor:
             msg.frame_id = '0'  # default: STOP
 
             # determine background color
-            hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-            hist, _ = np.histogram(hsv[:,:,0], bins=180, range=[0, 180])
-            backcolor = np.argmax(hist)  #빈도수가 가장 많은 색상 추출
+            hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)  # rgb->hsv로 변경
+            hist, _ = np.histogram(hsv[:,:,0], bins=180, range=[0, 180])  #hue(색상)에 대한 히스토그램
+            common_color = np.argmax(hist)  #빈도수가 가장 많은 색상 추출
             # TODO
             # determine the color and assing +1, 0, or, -1 for frame_id
-            if backcolor > 100:  # CW (Red background)
+            if common_color > 100:  # CW (Red background)
                 msg.frame_id = '-1' # CW
-            elif backcolor < 10: # CCW (Blue background)
+            elif common_color < 10: # CCW (Blue background)
                 msg.frame_id = '+1' # CCW
             else:
                 msg.frame_id = '0' # STOP
