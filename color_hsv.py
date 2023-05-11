@@ -12,12 +12,13 @@ class DetermineColor:
         self.color_pub = rospy.Publisher('/rotate_cmd', Header, queue_size=10)
         self.bridge = CvBridge()
         self.count=0
-
+	
     def callback(self, data):
         try:
             # listen image topic
             image = self.bridge.imgmsg_to_cv2(data, 'bgr8')
-
+            cv2.imshow('Image',image)
+            cv2.waitKey(1)
             # prepare rotate_cmd msg
             # DO NOT DELETE THE BELOW THREE LINES!
             msg = Header()
@@ -28,11 +29,12 @@ class DetermineColor:
             hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)  # rgb->hsv로 변경
             hist, _ = np.histogram(hsv[:,:,0], bins=180, range=[0, 180])  #hue(색상)에 대한 히스토그램
             common_color = np.argmax(hist)  #빈도수가 가장 많은 색상 추출
+
             # TODO
             # determine the color and assing +1, 0, or, -1 for frame_id
-            if (common_color > 0 and common_color <14.5) or (common_color > 171 and common_color <=180)   :  # CW (Red background)
+            if (0<=common_color <=12.5) or (150<=common_color <=180)   :  # CW (Red background)
                 msg.frame_id = '-1' # CW
-            elif (common_color > =90 and common_color =<135): # CCW (Blue background)
+            elif (70<=common_color<150): # CCW (Blue background)
                 msg.frame_id = '+1' # CCW
             else:
                 msg.frame_id = '0' # STOP
@@ -42,6 +44,15 @@ class DetermineColor:
 
         except CvBridgeError as e:
             print(e)
+         
+    def rospy_shutdown(self, signal, frame):
+        rospy.signal_shutdown("shut down")
+        sys.exit(0)
+
+if __name__ == '__main__':
+    rospy.init_node('CompressedImages1', anonymous=False)
+    detector = DetermineColor()
+    rospy.spin()
 
 
     def rospy_shutdown(self, signal, frame):
