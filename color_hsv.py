@@ -32,9 +32,9 @@ class DetermineColor:
 
             # TODO
             # determine the color and assing +1, 0, or, -1 for frame_id
-            if (0<=common_color <=12.5) or (150<=common_color <=180)   :  # CW (Red background)
+            if (0<=common_color <=15) or (165<=common_color <=180)   :  # CW (Red background)
                 msg.frame_id = '-1' # CW
-            elif (70<=common_color<150): # CCW (Blue background)
+            elif (90<=common_color<=135): # CCW (Blue background)
                 msg.frame_id = '+1' # CCW
             else:
                 msg.frame_id = '0' # STOP
@@ -42,6 +42,27 @@ class DetermineColor:
             # publish color_state
             self.color_pub.publish(msg)
 
+        except CvBridgeError as e:
+            print(e)
+         
+    def rospy_shutdown(self, signal, frame):
+        rospy.signal_shutdown("shut down")
+        sys.exit(0)
+
+if __name__ == '__main__':
+    rospy.init_node('CompressedImages1', anonymous=False)
+    detector = DetermineColor()
+    rospy.spin()
+
+
+    def rospy_shutdown(self, signal, frame):
+        rospy.signal_shutdown("shut down")
+        sys.exit(0)
+
+if __name__ == '__main__':
+    rospy.init_node('CompressedImages1', anonymous=False)
+    detector = DetermineColor()
+    rospy.spin()
         except CvBridgeError as e:
             print(e)
          
